@@ -1,5 +1,6 @@
 package com.library.users_microservice.controller;
 
+import com.library.users_microservice.dto.StudentDTO;
 import com.library.users_microservice.entities.StudentEntity;
 import com.library.users_microservice.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +25,17 @@ public class StudentController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createStudent(@RequestBody StudentEntity student) {
+    public ResponseEntity<?> createStudent(@RequestBody StudentDTO student) {
         return ResponseEntity.ok(studentService.save(student));
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteStudent(@PathVariable Long id) {
         return ResponseEntity.ok(studentService.deleteById(id));
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateStudent(@PathVariable Long id, @RequestBody StudentDTO student) {
+        return ResponseEntity.ok(studentService.updateStudent(id, student));
     }
 }

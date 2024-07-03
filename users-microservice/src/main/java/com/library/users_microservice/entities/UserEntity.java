@@ -18,11 +18,9 @@ public class UserEntity {
     @Id
     private Long id;
 
-    private String username;
+    private String email;
 
     private String password;
-
-    private String email;
 
     @Column(name = "is_enabled")
     private boolean isEnabled;

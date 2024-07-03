@@ -1,5 +1,7 @@
 package com.library.users_microservice.controller;
 
+import com.library.users_microservice.dto.LoginRequestDTO;
+import com.library.users_microservice.dto.UpdateRequestDTO;
 import com.library.users_microservice.entities.UserEntity;
 import com.library.users_microservice.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -23,15 +25,15 @@ public class UserController {
     @GetMapping("/get/{id}")
     public ResponseEntity<?> getUser(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(userService.deleteUser(id));
+            return ResponseEntity.ok(userService.getUser(id));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createUser(@RequestBody UserEntity user) {
-        return ResponseEntity.ok(userService.save(user));
+    public ResponseEntity<?> createUser(@RequestBody LoginRequestDTO loginRequestDTO) {
+        return ResponseEntity.ok(userService.save(loginRequestDTO));
     }
 
     @DeleteMapping("/delete/{id}")
@@ -41,5 +43,10 @@ public class UserController {
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UpdateRequestDTO updateRequestDTO) {
+        return ResponseEntity.ok(userService.updateUser(id, updateRequestDTO));
     }
 }

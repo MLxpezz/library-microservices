@@ -1,5 +1,8 @@
 package com.library.users_microservice.service;
 
+import com.library.users_microservice.dto.LoginRequestDTO;
+import com.library.users_microservice.dto.UpdateRequestDTO;
+import com.library.users_microservice.dto.UserDTO;
 import com.library.users_microservice.entities.UserEntity;
 import com.library.users_microservice.repository.UserRepository;
 import com.library.users_microservice.utils.UserMapper;
@@ -16,24 +19,34 @@ public class UserServiceImpl implements UserService{
     private UserRepository userRepository;
 
     @Override
-    public UserEntity save(UserEntity user) {
-        return userRepository.save(UserMapper.defaultUser(user));
+    public UserDTO save(LoginRequestDTO loginRequestDTO) {
+        UserEntity userEntity = UserMapper.defaultUser(loginRequestDTO);
+        return UserMapper.entityToDTO(userRepository.save(userEntity));
     }
 
     @Override
-    public UserEntity getUser(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User with id " + id + " not found"));
+    public UserDTO getUser(Long id) {
+        UserEntity user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User with id " + id + " not found"));
+        return UserMapper.entityToDTO(user);
     }
 
     @Override
-    public List<UserEntity> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserDTO> getAllUsers() {
+        return UserMapper.listEntityToDTO(userRepository.findAll());
     }
 
     @Override
     public String deleteUser(Long id) {
         UserEntity user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User with id " + id + " not found"));
         userRepository.delete(user);
-        return "User deleted";
+        return "User with id: " + id +" deleted";
+    }
+
+    @Override
+    public UserDTO updateUser(Long id, UpdateRequestDTO updateRequestDTO) {
+        UserEntity user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User with id " + id + " not found"));
+        user.setEmail(updateRequestDTO.email());
+        user.setPassword(updateRequestDTO.password());
+        return UserMapper.entityToDTO(userRepository.save(user));
     }
 }
