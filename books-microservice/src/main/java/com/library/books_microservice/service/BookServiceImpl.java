@@ -1,7 +1,9 @@
 package com.library.books_microservice.service;
 
+import com.library.books_microservice.dto.BookDTO;
 import com.library.books_microservice.entities.BookEntity;
 import com.library.books_microservice.repository.BookRepository;
+import com.library.books_microservice.utils.BookMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,36 +17,39 @@ public class BookServiceImpl implements BookService{
     private BookRepository bookRepository;
 
     @Override
-    public List<BookEntity> getBooks() {
-        return bookRepository.findAll();
+    public List<BookDTO> getBooks() {
+        return BookMapper.listEntityToDto(bookRepository.findAll());
     }
 
     @Override
-    public BookEntity getBookByTitle(String title) {
-        return bookRepository.customFindByTitle(title).orElseThrow();
+    public BookDTO getBookByTitle(String title) {
+        BookEntity bookEntity = bookRepository.customFindByTitle(title).orElseThrow();
+        return BookMapper.entityToDto(bookEntity);
     }
 
     @Override
-    public BookEntity createBook(BookEntity book) {
-        return bookRepository.save(book);
+    public BookDTO createBook(BookDTO book) {
+        BookEntity newBook = BookMapper.dtoToEntity(book);
+        return BookMapper.entityToDto(bookRepository.save(newBook));
     }
 
     @Override
     public String deleteBook(Long id) {
         bookRepository.deleteById(id.toString());
-        return "Book deleted";
+        return "Book with id: " + id + " deleted";
     }
 
     @Override
-    public BookEntity updateBook(String title, BookEntity book) {
+    public BookDTO updateBook(String title, BookDTO book) {
         Optional<BookEntity> bookEntity = bookRepository.customFindByTitle(title);
 
         if(bookEntity.isPresent()) {
             BookEntity updatedBook = bookEntity.get();
-            updatedBook.setQuantity(book.getQuantity());
-            return bookRepository.save(updatedBook);
+            updatedBook.setQuantity(book.quantity());
+            return BookMapper.entityToDto(bookRepository.save(updatedBook));
         }
 
-        return bookRepository.save(book);
+        BookEntity newBook = BookMapper.dtoToEntity(book);
+        return BookMapper.entityToDto(bookRepository.save(newBook));
     }
 }

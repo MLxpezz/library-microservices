@@ -1,18 +1,18 @@
 package com.library.books_microservice.service;
 
-import com.library.books_microservice.entities.BookEntity;
+import com.library.books_microservice.dto.BookDTO;
 
 import java.util.List;
 
 public interface BookService {
 
-    List<BookEntity> getBooks();
+    List<BookDTO> getBooks();
 
-    BookEntity getBookByTitle(String title);
+    BookDTO getBookByTitle(String title);
 
-    BookEntity createBook(BookEntity book);
+    BookDTO createBook(BookDTO book);
 
     String deleteBook(Long id);
 
-    BookEntity updateBook(String title, BookEntity book);
+    BookDTO updateBook(String title, BookDTO book);
 }
