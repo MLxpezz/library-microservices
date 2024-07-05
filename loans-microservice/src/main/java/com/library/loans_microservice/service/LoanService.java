@@ -1,20 +1,23 @@
 package com.library.loans_microservice.service;
 
+import com.library.loans_microservice.dto.CreateLoanDTO;
+import com.library.loans_microservice.dto.LoanDTO;
 import com.library.loans_microservice.dto.UpdateLoanDTO;
-import com.library.loans_microservice.entity.LoanEntity;
+import com.library.loans_microservice.http.response.LoanByStudentAndBookResponse;
 
-import java.time.LocalDate;
 import java.util.List;
 
 public interface LoanService {
 
-    LoanEntity save(LoanEntity loanEntity);
+    void save(CreateLoanDTO createLoanDTO);
 
-    List<LoanEntity> getLoans();
+    List<LoanDTO> getLoans();
 
-    LoanEntity getLoan(Long id);
+    LoanDTO getLoan(Long id);
 
     String deleteLoan(Long id);
 
-    LoanEntity updateLoan(Long id, UpdateLoanDTO updateLoanDTO);
+    LoanDTO updateLoan(Long id, UpdateLoanDTO updateLoanDTO);
+
+    LoanByStudentAndBookResponse getLoanByStudentAndBook(CreateLoanDTO createLoanDTO);
 }

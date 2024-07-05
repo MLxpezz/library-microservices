@@ -8,11 +8,11 @@ public interface BookService {
 
     List<BookDTO> getBooks();
 
-    BookDTO getBookByTitle(String title);
+    BookDTO getBookById(String bookId);
 
     BookDTO createBook(BookDTO book);
 
     String deleteBook(Long id);
 
-    BookDTO updateBook(String title, BookDTO book);
+    BookDTO updateBook(String bookId, BookDTO book);
 }

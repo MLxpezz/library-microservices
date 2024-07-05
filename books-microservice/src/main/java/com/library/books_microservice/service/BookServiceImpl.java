@@ -22,8 +22,8 @@ public class BookServiceImpl implements BookService{
     }
 
     @Override
-    public BookDTO getBookByTitle(String title) {
-        BookEntity bookEntity = bookRepository.customFindByTitle(title).orElseThrow();
+    public BookDTO getBookById(String bookId) {
+        BookEntity bookEntity = bookRepository.findById(bookId).orElseThrow();
         return BookMapper.entityToDto(bookEntity);
     }
 
@@ -40,8 +40,8 @@ public class BookServiceImpl implements BookService{
     }
 
     @Override
-    public BookDTO updateBook(String title, BookDTO book) {
-        Optional<BookEntity> bookEntity = bookRepository.customFindByTitle(title);
+    public BookDTO updateBook(String bookId, BookDTO book) {
+        Optional<BookEntity> bookEntity = bookRepository.customFindByTitle(bookId);
 
         if(bookEntity.isPresent()) {
             BookEntity updatedBook = bookEntity.get();

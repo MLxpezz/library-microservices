@@ -30,4 +30,6 @@ public class LoanEntity {
     private LocalDate returnDate;
 
     private Long studentId;
+
+    private String bookId;
 }
