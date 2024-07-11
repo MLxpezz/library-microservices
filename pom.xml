@@ -21,9 +21,10 @@
 		<module>eureka-microservice</module>
 		<module>gateway-microservice</module>
 		<module>config-server</module>
-		<module>users-microservice</module>
+		<module>students-microservice</module>
 		<module>books-microservice</module>
 		<module>loans-microservice</module>
+		<module>auth-microservice</module>
 	</modules>
 
 	<properties>
