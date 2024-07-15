@@ -9,13 +9,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.util.Base64;
 import java.util.Date;
 import java.util.stream.Collectors;
 
 @Component
 public class JwtUtils {
-
-    private SecretKey key = Jwts.SIG.HS256.key().build();
 
     public String createToken(Authentication authentication) {
 
@@ -31,9 +31,9 @@ public class JwtUtils {
         return Jwts
                 .builder()
                 .subject(username)
-                .expiration(new Date(System.currentTimeMillis() + 840000))
+                .expiration(new Date(System.currentTimeMillis() + 86400000))
                 .issuedAt(new Date())
-                .signWith(key)
+                .signWith(getSecretKey())
                 .claims(claims)
                 .compact();
     }
@@ -41,7 +41,7 @@ public class JwtUtils {
     public boolean validateToken(String token) {
         try {
             Jwts.parser()
-                    .verifyWith(key)
+                    .verifyWith(getSecretKey())
                     .build()
                     .parseSignedClaims(token)
                     .getPayload()
@@ -57,7 +57,7 @@ public class JwtUtils {
     public Claims getClaimsFromToken(String token) {
         return Jwts
                 .parser()
-                .verifyWith(key)
+                .verifyWith(getSecretKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
@@ -65,5 +65,11 @@ public class JwtUtils {
 
     public String getUsernameFromToken(String token) {
         return getClaimsFromToken(token).getSubject();
+    }
+
+    public SecretKey getSecretKey() {
+        String secretKey = System.getenv("SECRET_KEY");
+        byte[] keyBytes = Base64.getDecoder().decode(secretKey);
+        return new SecretKeySpec(keyBytes, "HmacSHA256");
     }
 }

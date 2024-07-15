@@ -11,7 +11,6 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -27,9 +26,9 @@ public class LoanServiceImpl implements LoanService{
     private StudentClientRequest studentClient;
 
     @Override
-    public void save(CreateLoanDTO createLoanDTO) {
+    public LoanEntity save(CreateLoanDTO createLoanDTO) {
         LoanEntity loanEntity = LoanMapper.dtoToEntity(createLoanDTO);
-        loanRepository.save(loanEntity);
+        return loanRepository.save(loanEntity);
     }
 
     @Override
@@ -66,14 +65,14 @@ public class LoanServiceImpl implements LoanService{
         BookDTO bookDTO = bookClient.findBookById(createLoanDTO.bookId());
 
         //guardo el prestamo en la base de datos
-        this.save(createLoanDTO);
+        LoanEntity newLoan = this.save(createLoanDTO);
 
         //construimos y retornamos el objeto del prestamo
         return LoanByStudentAndBookResponse
                 .builder()
                 .bookTitle(bookDTO.title())
                 .studentName(studentDTO.name() + " " + studentDTO.lastname())
-                .returnDate(LocalDate.now().plusDays(7))
+                .returnDate(newLoan.getReturnDate())
                 .build();
     }
 }

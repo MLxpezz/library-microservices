@@ -18,17 +18,21 @@ public class StudentEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private String lastname;
 
+    @Column(nullable = false, unique = true)
     private String email;
 
     private String phone;
 
-    @Column(name = "enrollment_number")
+    @Column(name = "enrollment_number", nullable = false)
     private String enrollmentNumber;
 
+    @Column(nullable = false)
     private String address;
 
     @Column(name = "id_loan")

@@ -16,6 +16,11 @@ public class StudentServiceImpl implements StudentService{
     @Autowired
     private StudentRepository studentRepository;
 
+    private StudentEntity getStudentById(Long id) {
+        return studentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Estudiante con id: " + id + " no existe."));
+    }
+
     @Override
     public StudentDTO save(StudentDTO student) {
         StudentEntity newUser = StudentMapper.dtoToEntity(student);
@@ -28,20 +33,24 @@ public class StudentServiceImpl implements StudentService{
     }
 
     @Override
-    public StudentDTO findById(long id) {
-        StudentEntity student = studentRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Student with id " + id + " not found"));
+    public StudentDTO findById(Long id) {
+        StudentEntity student = getStudentById(id);
         return StudentMapper.entityToDto(student);
     }
 
     @Override
-    public String deleteById(long id) {
-        studentRepository.deleteById(id);
-        return "Student with id " + id + " deleted";
+    public String deleteById(Long id) {
+        if(id != null) {
+            StudentEntity student = getStudentById(id);
+            studentRepository.delete(student);
+        }
+
+        return "Estudiante con id: " + id + " eliminado.";
     }
 
     @Override
     public StudentDTO updateStudent(Long id, StudentDTO studentDTO) {
-        StudentEntity student = studentRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Student with id " + id + " not found"));
+        StudentEntity student = getStudentById(id);
         student.setAddress(studentDTO.address());
         student.setEmail(studentDTO.email());
         student.setName(studentDTO.name());

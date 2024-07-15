@@ -22,6 +22,7 @@ public class LoanMapper {
     public static LoanDTO entityToDto(LoanEntity entity) {
         return LoanDTO
                 .builder()
+                .id(entity.getId())
                 .loanDate(entity.getLoanDate())
                 .returnDate(entity.getReturnDate())
                 .studentId(entity.getStudentId())

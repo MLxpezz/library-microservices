@@ -2,6 +2,7 @@ package com.library.students_microservice.controller;
 
 import com.library.students_microservice.dto.StudentDTO;
 import com.library.students_microservice.service.StudentService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class StudentController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createStudent(@RequestBody StudentDTO student) {
+    public ResponseEntity<?> createStudent(@RequestBody @Valid StudentDTO student) {
         return ResponseEntity.ok(studentService.save(student));
     }
 
@@ -34,7 +35,7 @@ public class StudentController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateStudent(@PathVariable Long id, @RequestBody StudentDTO student) {
+    public ResponseEntity<?> updateStudent(@PathVariable Long id, @RequestBody @Valid StudentDTO student) {
         return ResponseEntity.ok(studentService.updateStudent(id, student));
     }
 }

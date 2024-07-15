@@ -10,9 +10,9 @@ public interface StudentService {
 
     List<StudentDTO> findAll();
 
-    StudentDTO findById(long id);
+    StudentDTO findById(Long id);
 
-    String deleteById(long id);
+    String deleteById(Long id);
 
     StudentDTO updateStudent(Long id, StudentDTO student);
 }
