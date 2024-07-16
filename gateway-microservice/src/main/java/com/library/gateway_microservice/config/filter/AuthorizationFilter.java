@@ -28,17 +28,20 @@ public class AuthorizationFilter implements GatewayFilter {
 
         if(routeValidator.isSecured.test(request)) {
             if(!request.getHeaders().containsKey("Authorization")) {
+                System.out.println("NO AUTORIZADO PERROOOOO");
                 return this.onError(exchange, HttpStatus.UNAUTHORIZED);
             }
 
-            String token = request.getHeaders().getOrEmpty("Authorization").get(0).substring(7);
+            String token = request.getHeaders().getFirst("Authorization").substring(7);
 
             if(jwtUtils.validateToken(token)) {
+                System.out.println("SI PASASTEEEEEE");
                 Claims claims = jwtUtils.getClaimsFromToken(token);
                 exchange.getRequest().mutate().header("email", String.valueOf(claims.get("email"))).build();
             }
         }
 
+        System.out.println("NO AUTORIZADO PAPA");
         return chain.filter(exchange);
     }
 

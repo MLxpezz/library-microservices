@@ -11,5 +11,6 @@ public record StudentDTO(Long id,
                          @NotBlank(message = "El campo es requerido.") @Email(message = "El correo es invalido.") String email,
                          @NotBlank(message = "El campo es requerido.") String phone,
                          @NotBlank(message = "El campo es requerido.") String enrollmentNumber,
-                         @NotBlank(message = "El campo es requerido.") String address) {
+                         @NotBlank(message = "El campo es requerido.") String address,
+                         byte countLoans) {
 }

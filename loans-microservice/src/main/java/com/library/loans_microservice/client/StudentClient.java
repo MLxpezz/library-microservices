@@ -14,7 +14,8 @@ public class StudentClient {
     public StudentClientRequest studentClientRequest() {
         RestClient restClient = RestClient.builder().baseUrl("http://localhost:8080/api/students/").build();
         RestClientAdapter adapter = RestClientAdapter.create(restClient);
-        HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
+        HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter)
+                .build();
 
         return factory.createClient(StudentClientRequest.class);
     }

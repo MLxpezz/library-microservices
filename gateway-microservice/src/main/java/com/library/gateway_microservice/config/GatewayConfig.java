@@ -23,6 +23,12 @@ public class GatewayConfig {
                 .route("msvc-students", route -> route.path("/api/students/**")
                         .filters(filter -> filter.filter(authorizationFilter))
                         .uri("lb://msvc-students"))
+                .route("msvc-books", route -> route.path("/api/books/**")
+                        .filters(filter -> filter.filter(authorizationFilter))
+                        .uri("lb://msvc-books"))
+                .route("msvc-loans", route -> route.path("/api/loans/**")
+                        .filters(filter -> filter.filter(authorizationFilter))
+                        .uri("lb://msvc-loans"))
                 .build();
     }
 }

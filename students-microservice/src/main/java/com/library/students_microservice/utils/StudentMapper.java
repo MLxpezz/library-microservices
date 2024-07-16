@@ -17,6 +17,7 @@ public class StudentMapper {
                 .enrollmentNumber(studentEntity.getEnrollmentNumber())
                 .lastname(studentEntity.getLastname())
                 .email(studentEntity.getEmail())
+                .countLoans(studentEntity.getCountLoans())
                 .build();
     }
 
@@ -29,7 +30,7 @@ public class StudentMapper {
                 .phone(studentDTO.phone())
                 .name(studentDTO.name())
                 .idLoan(null)
-                .countLoans((byte) 0)
+                .countLoans(studentDTO.countLoans())
                 .email(studentDTO.email())
                 .build();
     }

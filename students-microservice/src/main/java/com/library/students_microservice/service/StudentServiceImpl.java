@@ -24,6 +24,7 @@ public class StudentServiceImpl implements StudentService{
     @Override
     public StudentDTO save(StudentDTO student) {
         StudentEntity newUser = StudentMapper.dtoToEntity(student);
+        newUser.setCountLoans((byte) 0);
         return StudentMapper.entityToDto(studentRepository.save(newUser));
     }
 
