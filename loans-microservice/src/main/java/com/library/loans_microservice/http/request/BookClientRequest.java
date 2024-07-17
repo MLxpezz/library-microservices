@@ -13,6 +13,6 @@ public interface BookClientRequest {
     @GetExchange("/get/{bookId}")
     public BookDTO findBookById(@PathVariable String bookId);
 
-    @PutExchange("/update/{bookid}")
+    @PutExchange("/update/{bookId}")
     public BookDTO updateBook(@PathVariable String bookId, @RequestBody BookDTO bookDTO);
 }

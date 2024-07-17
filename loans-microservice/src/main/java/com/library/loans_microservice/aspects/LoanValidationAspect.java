@@ -3,6 +3,8 @@ package com.library.loans_microservice.aspects;
 import com.library.loans_microservice.dto.BookDTO;
 import com.library.loans_microservice.dto.CreateLoanDTO;
 import com.library.loans_microservice.dto.StudentDTO;
+import com.library.loans_microservice.exceptions.InsufficientBookStockException;
+import com.library.loans_microservice.exceptions.MaxLoansReachedException;
 import com.library.loans_microservice.http.request.BookClientRequest;
 import com.library.loans_microservice.http.request.StudentClientRequest;
 import org.aspectj.lang.JoinPoint;
@@ -25,21 +27,21 @@ public class LoanValidationAspect {
     @Autowired
     private BookClientRequest bookClient;
 
-    /*@Before("execution(* com.library.loans_microservice.service.LoanService.getLoanByStudentAndBook(..)) && args (createLoanDTO)")
+    @Before("execution(* com.library.loans_microservice.service.LoanService.getLoanByStudentAndBook(..)) && args (createLoanDTO)")
     public void validateLoanRequest(JoinPoint joinPoint, CreateLoanDTO createLoanDTO) {
 
         //Verifico primero si el estudiante tiene menos de los 4 prestamos permitidos
         StudentDTO student = studentClient.getStudentById(createLoanDTO.studentId());
-        if(student.getCountLoans() >= 4) {
-            throw new IllegalStateException("El estudiante ya tiene el maximo de prestamos permitidos.");
+        if(student.countLoans() >= 4) {
+            throw new MaxLoansReachedException("El estudiante ya tiene el maximo de prestamos permitidos.");
         }
 
         //Si el estudiante puede pedir prestado verifico si hay libros todavia en existencia
         BookDTO book = bookClient.findBookById(createLoanDTO.bookId());
-        if(book.quantity() == 0) {
-            throw new IllegalStateException("El libro: " + book.title() + " no tiene existencias.");
+        if(book.quantity() >= 0) {
+            throw new InsufficientBookStockException("El libro: " + book.title() + " no tiene existencias.");
         }
 
-        logger.info("El prestamo se realizo con exito al alumno {} y del libro {}", student.getName(), book.title());
-    }*/
+        logger.info("El prestamo se realizo con exito al alumno {} y del libro {}", student.name(), book.title());
+    }
 }

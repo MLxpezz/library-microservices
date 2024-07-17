@@ -58,6 +58,7 @@ public class StudentServiceImpl implements StudentService{
         student.setPhone(studentDTO.phone());
         student.setLastname(studentDTO.lastname());
         student.setEnrollmentNumber(studentDTO.enrollmentNumber());
+        student.setCountLoans(studentDTO.countLoans());
         return StudentMapper.entityToDto(studentRepository.save(student));
     }
 }

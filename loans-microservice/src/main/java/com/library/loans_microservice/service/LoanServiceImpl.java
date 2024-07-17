@@ -10,9 +10,11 @@ import com.library.loans_microservice.utils.LoanMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Transactional
 @Service
 public class LoanServiceImpl implements LoanService{
 
@@ -25,6 +27,7 @@ public class LoanServiceImpl implements LoanService{
     @Autowired
     private StudentClientRequest studentClient;
 
+    @Transactional
     @Override
     public LoanEntity save(CreateLoanDTO createLoanDTO) {
         LoanEntity loanEntity = LoanMapper.dtoToEntity(createLoanDTO);
