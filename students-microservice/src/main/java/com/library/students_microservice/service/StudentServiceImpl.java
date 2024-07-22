@@ -61,4 +61,18 @@ public class StudentServiceImpl implements StudentService{
         student.setCountLoans(studentDTO.countLoans());
         return StudentMapper.entityToDto(studentRepository.save(student));
     }
+
+    @Override
+    public StudentDTO studentLoan(Long id) {
+        StudentEntity student = this.getStudentById(id);
+        student.setCountLoans((byte) (student.getCountLoans() + 1));
+        return StudentMapper.entityToDto(studentRepository.save(student));
+    }
+
+    @Override
+    public StudentDTO studentReturnBook(Long id) {
+        StudentEntity student = this.getStudentById(id);
+        student.setCountLoans((byte) (student.getCountLoans() - 1));
+        return StudentMapper.entityToDto(studentRepository.save(student));
+    }
 }

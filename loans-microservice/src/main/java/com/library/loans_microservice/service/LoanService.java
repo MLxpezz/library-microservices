@@ -2,7 +2,6 @@ package com.library.loans_microservice.service;
 
 import com.library.loans_microservice.dto.CreateLoanDTO;
 import com.library.loans_microservice.dto.LoanDTO;
-import com.library.loans_microservice.dto.UpdateLoanDTO;
 import com.library.loans_microservice.entity.LoanEntity;
 import com.library.loans_microservice.http.response.LoanByStudentAndBookResponse;
 
@@ -14,11 +13,11 @@ public interface LoanService {
 
     List<LoanDTO> getLoans();
 
-    LoanDTO getLoan(Long id);
+    LoanDTO getLoan(Long idLoan);
 
-    String deleteLoan(Long id);
+    String deleteLoan(Long idLoan);
 
-    LoanDTO updateLoan(Long id, UpdateLoanDTO updateLoanDTO);
+    LoanDTO updateLoan(Long idLoan);
 
     LoanByStudentAndBookResponse getLoanByStudentAndBook(CreateLoanDTO createLoanDTO);
 }

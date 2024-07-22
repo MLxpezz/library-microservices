@@ -15,4 +15,8 @@ public interface StudentService {
     String deleteById(Long id);
 
     StudentDTO updateStudent(Long id, StudentDTO student);
+
+    StudentDTO studentLoan(Long id);
+
+    StudentDTO studentReturnBook(Long id);
 }

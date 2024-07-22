@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Transactional
@@ -27,7 +28,6 @@ public class LoanServiceImpl implements LoanService{
     @Autowired
     private StudentClientRequest studentClient;
 
-    @Transactional
     @Override
     public LoanEntity save(CreateLoanDTO createLoanDTO) {
         LoanEntity loanEntity = LoanMapper.dtoToEntity(createLoanDTO);
@@ -52,9 +52,9 @@ public class LoanServiceImpl implements LoanService{
     }
 
     @Override
-    public LoanDTO updateLoan(Long id, UpdateLoanDTO updateLoanDTO) {
+    public LoanDTO updateLoan(Long id) {
         LoanEntity loanEntity = loanRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Prestamo con id: " + id + " no encontrado"));
-        loanEntity.setReturnDate(updateLoanDTO.returnDate());
+        loanEntity.setReturnDate(LocalDate.now().plusDays(7));
         return LoanMapper.entityToDto(loanRepository.save(loanEntity));
     }
 

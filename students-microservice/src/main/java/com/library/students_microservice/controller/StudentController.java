@@ -38,4 +38,14 @@ public class StudentController {
     public ResponseEntity<?> updateStudent(@PathVariable Long id, @RequestBody @Valid StudentDTO student) {
         return ResponseEntity.ok(studentService.updateStudent(id, student));
     }
+
+    @PutMapping("/student-loan/{id}")
+    public ResponseEntity<?> studentLoan(@PathVariable Long id) {
+        return ResponseEntity.ok(studentService.studentLoan(id));
+    }
+
+    @PutMapping("/student-return-book/{id}")
+    public ResponseEntity<?> studentReturnBook(@PathVariable Long id) {
+        return ResponseEntity.ok(studentService.studentReturnBook(id));
+    }
 }

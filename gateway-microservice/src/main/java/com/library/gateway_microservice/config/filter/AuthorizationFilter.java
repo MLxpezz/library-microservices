@@ -39,6 +39,8 @@ public class AuthorizationFilter implements GatewayFilter {
                 exchange.getRequest().mutate()
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                         .build();
+            } else {
+                return this.onError(exchange, HttpStatus.UNAUTHORIZED);
             }
         }
 

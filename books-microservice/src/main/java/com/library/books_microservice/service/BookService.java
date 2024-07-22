@@ -15,4 +15,8 @@ public interface BookService {
     String deleteBook(Long id);
 
     BookDTO updateBook(String bookId, BookDTO book);
+
+    BookDTO bookLoan(String bookId);
+
+    BookDTO bookReturn(String bookId);
 }

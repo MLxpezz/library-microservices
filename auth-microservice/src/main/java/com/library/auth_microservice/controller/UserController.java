@@ -59,7 +59,6 @@ public class UserController {
                     .builder()
                     .message("Autenticacion exitosa!")
                     .token(token)
-                    .username(authentication.getName())
                     .build();
 
             return ResponseEntity.ok(authResponse);

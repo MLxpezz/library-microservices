@@ -52,4 +52,30 @@ public class BookServiceImpl implements BookService{
         BookEntity newBook = BookMapper.dtoToEntity(book);
         return BookMapper.entityToDto(bookRepository.save(newBook));
     }
+
+    @Override
+    public BookDTO bookLoan(String bookId) {
+        Optional<BookEntity> bookEntity = bookRepository.findById(bookId);
+
+        if(bookEntity.isPresent()) {
+            BookEntity updatedBook = bookEntity.get();
+            updatedBook.setQuantity((byte)(updatedBook.getQuantity() - 1));
+            return BookMapper.entityToDto(bookRepository.save(updatedBook));
+        }
+
+        return null;
+    }
+
+    @Override
+    public BookDTO bookReturn(String bookId) {
+        Optional<BookEntity> bookEntity = bookRepository.findById(bookId);
+
+        if(bookEntity.isPresent()) {
+            BookEntity updatedBook = bookEntity.get();
+            updatedBook.setQuantity((byte)(updatedBook.getQuantity() + 1));
+            return BookMapper.entityToDto(bookRepository.save(updatedBook));
+        }
+
+        return null;
+    }
 }

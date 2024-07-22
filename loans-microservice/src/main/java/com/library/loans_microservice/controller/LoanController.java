@@ -2,7 +2,6 @@ package com.library.loans_microservice.controller;
 
 import com.library.loans_microservice.dto.CreateLoanDTO;
 import com.library.loans_microservice.dto.LoanDTO;
-import com.library.loans_microservice.dto.UpdateLoanDTO;
 import com.library.loans_microservice.exceptions.InsufficientBookStockException;
 import com.library.loans_microservice.exceptions.MaxLoansReachedException;
 import com.library.loans_microservice.http.request.BookClientRequest;
@@ -10,6 +9,7 @@ import com.library.loans_microservice.http.request.StudentClientRequest;
 import com.library.loans_microservice.http.response.LoanByStudentAndBookResponse;
 import com.library.loans_microservice.service.LoanService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,19 +40,19 @@ public class LoanController {
         return ResponseEntity.ok(loanService.getLoan(id));
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteLoan(@PathVariable Long id) {
-        return ResponseEntity.ok(loanService.deleteLoan(id));
+    @PutMapping("/update/{id}")
+    public ResponseEntity<LoanDTO> updateLoan(@PathVariable Long id) {
+        return ResponseEntity.ok(loanService.updateLoan(id));
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<LoanDTO> updateLoan(@PathVariable Long id, @RequestBody UpdateLoanDTO updateLoanDTO) {
-        return ResponseEntity.ok(loanService.updateLoan(id, updateLoanDTO));
+    @DeleteMapping("/return-book/{id}")
+    public ResponseEntity<?> returnBook(@PathVariable Long id) {
+        return ResponseEntity.ok(loanService.deleteLoan(id));
     }
 
     @CircuitBreaker(name = "studentClient", fallbackMethod = "fallbackNewLoan")
     @PostMapping("/create")
-    public ResponseEntity<?> newLoan(@RequestBody CreateLoanDTO createLoanDTO) {
+    public ResponseEntity<?> newLoan(@RequestBody @Valid CreateLoanDTO createLoanDTO) {
         try {
             return ResponseEntity.ok(loanService.getLoanByStudentAndBook(createLoanDTO));
         } catch (MaxLoansReachedException | InsufficientBookStockException exception) {
@@ -68,4 +68,5 @@ public class LoanController {
                 .build();
         return new ResponseEntity<>(response, HttpStatus.SERVICE_UNAVAILABLE);
     }
+
 }

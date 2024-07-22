@@ -38,7 +38,7 @@ public class LoanValidationAspect {
 
         //Si el estudiante puede pedir prestado verifico si hay libros todavia en existencia
         BookDTO book = bookClient.findBookById(createLoanDTO.bookId());
-        if(book.quantity() >= 0) {
+        if(book.quantity() <= 0) {
             throw new InsufficientBookStockException("El libro: " + book.title() + " no tiene existencias.");
         }
 

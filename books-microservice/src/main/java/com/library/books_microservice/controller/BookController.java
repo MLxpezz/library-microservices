@@ -40,4 +40,14 @@ public class BookController {
         return ResponseEntity.ok(bookService.updateBook(bookId, book));
     }
 
+    @PutMapping("/book-loan/{bookId}")
+    public ResponseEntity<BookDTO> bookLoan(@PathVariable String bookId) {
+        return ResponseEntity.ok(bookService.bookLoan(bookId));
+    }
+
+    @PutMapping("/book-return/{bookId}")
+    public ResponseEntity<BookDTO> bookReturn(@PathVariable String bookId) {
+        return ResponseEntity.ok(bookService.bookReturn(bookId));
+    }
+
 }
