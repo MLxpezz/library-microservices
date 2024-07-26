@@ -21,20 +21,12 @@ public class JwtUtils {
 
         String username = authentication.getName();
 
-        String roles = authentication.getAuthorities()
-                .stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
-
-        Claims claims = Jwts.claims().add("authorities", roles).build();
-
         return Jwts
                 .builder()
                 .subject(username)
                 .expiration(new Date(System.currentTimeMillis() + 86400000))
                 .issuedAt(new Date())
                 .signWith(getSecretKey())
-                .claims(claims)
                 .compact();
     }
 

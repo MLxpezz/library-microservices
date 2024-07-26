@@ -4,6 +4,7 @@ import com.library.books_microservice.dto.BookDTO;
 import com.library.books_microservice.entities.BookEntity;
 import com.library.books_microservice.repository.BookRepository;
 import com.library.books_microservice.utils.BookMapper;
+import com.mongodb.MongoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +42,7 @@ public class BookServiceImpl implements BookService{
 
     @Override
     public BookDTO updateBook(String bookId, BookDTO book) {
-        Optional<BookEntity> bookEntity = bookRepository.customFindByTitle(bookId);
+        Optional<BookEntity> bookEntity = bookRepository.findById(bookId);
 
         if(bookEntity.isPresent()) {
             BookEntity updatedBook = bookEntity.get();
@@ -55,27 +56,17 @@ public class BookServiceImpl implements BookService{
 
     @Override
     public BookDTO bookLoan(String bookId) {
-        Optional<BookEntity> bookEntity = bookRepository.findById(bookId);
+        BookEntity bookEntity = bookRepository.findById(bookId).orElseThrow(() -> new MongoException("El libro con id: " + bookId + " no existe."));
 
-        if(bookEntity.isPresent()) {
-            BookEntity updatedBook = bookEntity.get();
-            updatedBook.setQuantity((byte)(updatedBook.getQuantity() - 1));
-            return BookMapper.entityToDto(bookRepository.save(updatedBook));
-        }
-
-        return null;
+        bookEntity.setQuantity((byte)(bookEntity.getQuantity() - 1));
+        return BookMapper.entityToDto(bookRepository.save(bookEntity));
     }
 
     @Override
     public BookDTO bookReturn(String bookId) {
-        Optional<BookEntity> bookEntity = bookRepository.findById(bookId);
+        BookEntity bookEntity = bookRepository.findById(bookId).orElseThrow(() -> new MongoException("El libro con id: " + bookId + " no existe."));
 
-        if(bookEntity.isPresent()) {
-            BookEntity updatedBook = bookEntity.get();
-            updatedBook.setQuantity((byte)(updatedBook.getQuantity() + 1));
-            return BookMapper.entityToDto(bookRepository.save(updatedBook));
-        }
-
-        return null;
+        bookEntity.setQuantity((byte)(bookEntity.getQuantity() + 1));
+        return BookMapper.entityToDto(bookRepository.save(bookEntity));
     }
 }

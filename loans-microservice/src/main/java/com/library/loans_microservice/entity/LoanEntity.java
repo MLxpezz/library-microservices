@@ -21,15 +21,17 @@ public class LoanEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "loan_date")
+    @Column(name = "loan_date", nullable = false, columnDefinition = "DATE")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate loanDate;
 
-    @Column(name = "return_date")
+    @Column(name = "return_date", nullable = false, columnDefinition = "DATE")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate returnDate;
 
+    @Column(name = "student_id", nullable = false)
     private Long studentId;
 
+    @Column(name = "book_id", nullable = false)
     private String bookId;
 }

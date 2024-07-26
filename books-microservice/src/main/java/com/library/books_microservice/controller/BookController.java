@@ -2,6 +2,7 @@ package com.library.books_microservice.controller;
 
 import com.library.books_microservice.dto.BookDTO;
 import com.library.books_microservice.service.BookService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +27,7 @@ public class BookController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<BookDTO> createBook(@RequestBody BookDTO book) {
+    public ResponseEntity<BookDTO> createBook(@RequestBody @Valid BookDTO book) {
         return ResponseEntity.ok(bookService.createBook(book));
     }
 
@@ -36,7 +37,7 @@ public class BookController {
     }
 
     @PutMapping("/update/{bookId}")
-    public ResponseEntity<BookDTO> updateBook(@PathVariable String bookId, @RequestBody BookDTO book) {
+    public ResponseEntity<BookDTO> updateBook(@PathVariable String bookId, @RequestBody @Valid BookDTO book) {
         return ResponseEntity.ok(bookService.updateBook(bookId, book));
     }
 

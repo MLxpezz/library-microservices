@@ -18,8 +18,10 @@ public class UserEntity {
     @Id
     private Long id;
 
+    @Column(nullable = false)
     private String email;
 
+    @Column(nullable = false)
     private String password;
 
     @Column(name = "is_enabled")

@@ -42,7 +42,7 @@ public class GlobalException {
         Map<String, String> errors = new HashMap<>();
         String message = exception.getRootCause() != null ? exception.getRootCause().getMessage() : exception.getMessage();
 
-        if (message.contains("llave duplicada")) {
+        if (message.contains("duplicate key")) {
             errors.put("mensaje", "El correo ya existe.");
             return new ResponseEntity<>(errors, HttpStatus.CONFLICT);
         }
