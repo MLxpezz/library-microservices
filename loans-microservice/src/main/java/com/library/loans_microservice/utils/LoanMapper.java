@@ -1,8 +1,12 @@
 package com.library.loans_microservice.utils;
 
+import com.library.loans_microservice.dto.BookDTO;
 import com.library.loans_microservice.dto.CreateLoanDTO;
 import com.library.loans_microservice.dto.LoanDTO;
+import com.library.loans_microservice.dto.StudentDTO;
 import com.library.loans_microservice.entity.LoanEntity;
+import com.library.loans_microservice.http.request.BookClientRequest;
+import com.library.loans_microservice.http.request.StudentClientRequest;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,21 +23,29 @@ public class LoanMapper {
                 .build();
     }
 
-    public static LoanDTO entityToDto(LoanEntity entity) {
+    public static LoanDTO entityToDto(LoanEntity entity, StudentDTO student, BookDTO book) {
         return LoanDTO
                 .builder()
                 .id(entity.getId())
-                .loanDate(entity.getLoanDate())
                 .returnDate(entity.getReturnDate())
-                .studentId(entity.getStudentId())
-                .bookId(entity.getBookId())
+                .studentName(student.name())
+                .bookTitle(book.title())
                 .build();
     }
 
-    public static List<LoanDTO> entityListToDtoList(List<LoanEntity> entityList) {
+    public static List<LoanDTO> entityListToDtoList(List<LoanEntity> entityList, StudentClientRequest studentClient, BookClientRequest bookClient) {
         return entityList
                 .stream()
-                .map(LoanMapper::entityToDto)
+                .map(loan -> {
+                    StudentDTO student = studentClient.getStudentById(loan.getStudentId());
+                    return LoanDTO
+                            .builder()
+                            .id(loan.getId())
+                            .returnDate(loan.getReturnDate())
+                            .studentName(student.name() + " " + student.lastname())
+                            .bookTitle(bookClient.findBookById(loan.getBookId()).title())
+                            .build();
+                })
                 .toList();
     }
 }

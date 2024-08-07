@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/books")
@@ -32,8 +33,8 @@ public class BookController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteBook(@PathVariable Long id) {
-        return ResponseEntity.ok(bookService.deleteBook(id));
+    public ResponseEntity<Map<String, String>> deleteBook(@PathVariable String id) {
+        return ResponseEntity.ok(Map.of("mensaje:", bookService.deleteBook(id)));
     }
 
     @PutMapping("/update/{bookId}")

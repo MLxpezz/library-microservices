@@ -2,7 +2,6 @@ package com.library.gateway_microservice.config.filter;
 
 import com.library.gateway_microservice.config.RouteValidator;
 import com.library.gateway_microservice.config.utils.JwtUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.http.HttpHeaders;
@@ -18,11 +17,14 @@ import java.util.Objects;
 @Component
 public class AuthorizationFilter implements GatewayFilter {
 
-    @Autowired
-    private JwtUtils jwtUtils;
+    private final JwtUtils jwtUtils;
 
-    @Autowired
-    private RouteValidator routeValidator;
+    private final RouteValidator routeValidator;
+
+    public AuthorizationFilter(JwtUtils jwtUtils, RouteValidator routeValidator) {
+        this.jwtUtils = jwtUtils;
+        this.routeValidator = routeValidator;
+    }
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {

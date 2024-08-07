@@ -1,7 +1,6 @@
 package com.library.loans_microservice.client;
 
 import com.library.loans_microservice.http.request.BookClientRequest;
-import com.library.loans_microservice.http.request.StudentClientRequest;
 import com.library.loans_microservice.interceptor.JwtInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

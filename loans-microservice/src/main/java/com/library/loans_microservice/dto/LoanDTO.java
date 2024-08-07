@@ -5,5 +5,5 @@ import lombok.Builder;
 import java.time.LocalDate;
 
 @Builder
-public record LoanDTO(Long id, LocalDate loanDate, LocalDate returnDate, Long studentId, String bookId) {
+public record LoanDTO(Long id, LocalDate returnDate, String studentName, String bookTitle) {
 }

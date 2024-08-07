@@ -5,5 +5,5 @@ import lombok.Builder;
 import java.util.Date;
 
 @Builder
-public record AuthResponseDTO (String token, String message, boolean isSuccess, Date expiration){
+public record AuthResponseDTO (String token, String message, boolean isSuccess){
 }

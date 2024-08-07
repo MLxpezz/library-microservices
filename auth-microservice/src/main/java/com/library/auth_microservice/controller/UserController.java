@@ -4,7 +4,10 @@ import com.library.auth_microservice.config.jwt.JwtUtils;
 import com.library.auth_microservice.dto.AuthResponseDTO;
 import com.library.auth_microservice.dto.LoginRequestDTO;
 import com.library.auth_microservice.dto.UpdateRequestDTO;
+import com.library.auth_microservice.dto.UserDTO;
 import com.library.auth_microservice.service.UserService;
+import io.jsonwebtoken.Jwt;
+import io.jsonwebtoken.JwtException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,11 +50,25 @@ public class UserController {
     }
 
     @GetMapping("/validate-token")
-    public boolean validateToken(@RequestHeader("Authorization") String token) {
-        if(token.startsWith("Bearer ")) {
-            return jwtUtils.validateToken(token.substring(7));
+    public ResponseEntity<Boolean> validateToken(@RequestHeader("Authorization") String authHeader) {
+        if (!authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
         }
-        return false;
+
+        String token = authHeader.substring(7);
+
+        try {
+            String emailFromToken = jwtUtils.getUsernameFromToken(token);
+            UserDTO userDTO = userService.getUserByEmail(emailFromToken);
+
+            if (userDTO != null && jwtUtils.validateToken(token)) {
+                return ResponseEntity.ok(true);
+            }
+        } catch (EntityNotFoundException | JwtException exception) {
+            System.out.println("Ocurrio un error: " + exception.getMessage());
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
     }
 
     @PostMapping("/register")
@@ -66,14 +83,12 @@ public class UserController {
                     new UsernamePasswordAuthenticationToken(loginRequestDTO.email(), loginRequestDTO.password())
             );
             String token = jwtUtils.createToken(authentication);
-            Date expiration = jwtUtils.getClaimsFromToken(token).getExpiration();
 
             AuthResponseDTO authResponse = AuthResponseDTO
                     .builder()
                     .message("Autenticacion exitosa!")
                     .token(token)
                     .isSuccess(true)
-                    .expiration(expiration)
                     .build();
 
             return ResponseEntity.ok(authResponse);

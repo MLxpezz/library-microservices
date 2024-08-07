@@ -1,7 +1,6 @@
 package com.library.gateway_microservice.config;
 
 import com.library.gateway_microservice.config.filter.AuthorizationFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
@@ -10,8 +9,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class GatewayConfig {
 
-    @Autowired
-    private AuthorizationFilter authorizationFilter;
+    private final AuthorizationFilter authorizationFilter;
+
+    public GatewayConfig(AuthorizationFilter authorizationFilter) {
+        this.authorizationFilter = authorizationFilter;
+    }
 
     @Bean
     RouteLocator routes(RouteLocatorBuilder builder) {

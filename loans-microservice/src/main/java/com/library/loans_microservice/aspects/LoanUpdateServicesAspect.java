@@ -6,17 +6,13 @@ import com.library.loans_microservice.dto.StudentDTO;
 import com.library.loans_microservice.entity.LoanEntity;
 import com.library.loans_microservice.http.request.BookClientRequest;
 import com.library.loans_microservice.http.request.StudentClientRequest;
-import com.library.loans_microservice.http.response.LoanByStudentAndBookResponse;
 import com.library.loans_microservice.repository.LoanRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Aspect
@@ -25,14 +21,17 @@ public class LoanUpdateServicesAspect {
 
     Logger logger = LoggerFactory.getLogger(LoanUpdateServicesAspect.class);
 
-    @Autowired
-    private StudentClientRequest studentClient;
+    private final StudentClientRequest studentClient;
 
-    @Autowired
-    private BookClientRequest bookClient;
+    private final BookClientRequest bookClient;
 
-    @Autowired
-    private LoanRepository loanRepository;
+    private final LoanRepository loanRepository;
+
+    public LoanUpdateServicesAspect(StudentClientRequest studentClient, BookClientRequest bookClient, LoanRepository loanRepository) {
+        this.studentClient = studentClient;
+        this.bookClient = bookClient;
+        this.loanRepository = loanRepository;
+    }
 
     @AfterReturning(value = "execution(* com.library.loans_microservice.service.LoanService.getLoanByStudentAndBook(..)) && args(createLoanDTO)", argNames = "createLoanDTO")
     public void updateStudentAndBook(CreateLoanDTO createLoanDTO) {

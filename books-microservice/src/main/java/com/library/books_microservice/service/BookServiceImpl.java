@@ -35,7 +35,7 @@ public class BookServiceImpl implements BookService{
     }
 
     @Override
-    public String deleteBook(Long id) {
+    public String deleteBook(String  id) {
         bookRepository.deleteById(id.toString());
         return "Book with id: " + id + " deleted";
     }
@@ -46,6 +46,9 @@ public class BookServiceImpl implements BookService{
 
         if(bookEntity.isPresent()) {
             BookEntity updatedBook = bookEntity.get();
+            updatedBook.setAuthor(book.author());
+            updatedBook.setTitle(book.title());
+            updatedBook.setIsbn(book.isbn());
             updatedBook.setQuantity(book.quantity());
             return BookMapper.entityToDto(bookRepository.save(updatedBook));
         }

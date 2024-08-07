@@ -4,13 +4,10 @@ import com.library.loans_microservice.dto.CreateLoanDTO;
 import com.library.loans_microservice.dto.LoanDTO;
 import com.library.loans_microservice.exceptions.InsufficientBookStockException;
 import com.library.loans_microservice.exceptions.MaxLoansReachedException;
-import com.library.loans_microservice.http.request.BookClientRequest;
-import com.library.loans_microservice.http.request.StudentClientRequest;
 import com.library.loans_microservice.http.response.LoanByStudentAndBookResponse;
 import com.library.loans_microservice.service.LoanService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,18 +18,20 @@ import java.util.List;
 @RequestMapping("/api/loans")
 public class LoanController {
 
-    @Autowired
-    private LoanService loanService;
+    private final LoanService loanService;
 
-    @Autowired
-    private BookClientRequest bookClient;
-
-    @Autowired
-    private StudentClientRequest studentClient;
+    public LoanController(LoanService loanService) {
+        this.loanService = loanService;
+    }
 
     @GetMapping("/get-all")
     public ResponseEntity<List<LoanDTO>> getAllLoans() {
         return ResponseEntity.ok(loanService.getLoans());
+    }
+
+    @GetMapping("/get-info-loans")
+    public ResponseEntity<?> getInfoLoans() {
+        return ResponseEntity.ok(loanService.getReturningInfo());
     }
 
     @GetMapping("/get/{id}")

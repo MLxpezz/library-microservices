@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 @Data
 @NoArgsConstructor
@@ -34,4 +35,13 @@ public class LoanEntity {
 
     @Column(name = "book_id", nullable = false)
     private String bookId;
+
+    public long daysPastDue() {
+        long daysBetween = ChronoUnit.DAYS.between(this.returnDate, LocalDate.now());
+        return daysBetween < 0 ? 0 : daysBetween;
+    }
+
+    public double penaltyAmount() {
+        return this.daysPastDue() * 2.00;
+    }
 }

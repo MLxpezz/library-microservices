@@ -12,7 +12,7 @@ public interface BookService {
 
     BookDTO createBook(BookDTO book);
 
-    String deleteBook(Long id);
+    String deleteBook(String id);
 
     BookDTO updateBook(String bookId, BookDTO book);
 

@@ -3,16 +3,20 @@ package com.library.students_microservice.controller;
 import com.library.students_microservice.dto.StudentDTO;
 import com.library.students_microservice.service.StudentService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/students")
 public class StudentController {
 
-    @Autowired
-    private StudentService studentService;
+    private final StudentService studentService;
+
+    public StudentController(StudentService studentService) {
+        this.studentService = studentService;
+    }
 
     @GetMapping("/get-all")
     public ResponseEntity<?> getAllStudents() {
@@ -31,7 +35,7 @@ public class StudentController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteStudent(@PathVariable Long id) {
-        return ResponseEntity.ok(studentService.deleteById(id));
+        return ResponseEntity.ok(Map.of("MENSAJE:", studentService.deleteById(id)));
     }
 
     @PutMapping("/update/{id}")

@@ -13,5 +13,6 @@ public interface UserService {
     List<UserDTO> getAllUsers();
     String deleteUser(Long id);
     UserDTO updateUser(Long id, UpdateRequestDTO updateRequestDTO);
+    UserDTO getUserByEmail(String email);
 
 }

@@ -54,4 +54,12 @@ public class UserServiceImpl implements UserService{
         user.setPassword(updateRequestDTO.password());
         return UserMapper.entityToDTO(userRepository.save(user));
     }
+
+    @Override
+    public UserDTO getUserByEmail(String email) {
+       UserEntity user = userRepository
+               .findUserEntityByEmail(email).orElseThrow(() -> new EntityNotFoundException("El usuario con email: " + email + " no se encontro o no existe."));
+
+       return UserMapper.entityToDTO(user);
+    }
 }

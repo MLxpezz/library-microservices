@@ -5,10 +5,10 @@ import com.library.loans_microservice.entity.LoanEntity;
 import com.library.loans_microservice.http.request.BookClientRequest;
 import com.library.loans_microservice.http.request.StudentClientRequest;
 import com.library.loans_microservice.http.response.LoanByStudentAndBookResponse;
+import com.library.loans_microservice.http.response.LoansReturningInfo;
 import com.library.loans_microservice.repository.LoanRepository;
 import com.library.loans_microservice.utils.LoanMapper;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,14 +19,17 @@ import java.util.List;
 @Service
 public class LoanServiceImpl implements LoanService{
 
-    @Autowired
-    private LoanRepository loanRepository;
+    private final LoanRepository loanRepository;
 
-    @Autowired
-    private BookClientRequest bookClient;
+    private final BookClientRequest bookClient;
 
-    @Autowired
-    private StudentClientRequest studentClient;
+    private final StudentClientRequest studentClient;
+
+    public LoanServiceImpl(LoanRepository loanRepository, BookClientRequest bookClient, StudentClientRequest studentClient) {
+        this.loanRepository = loanRepository;
+        this.bookClient = bookClient;
+        this.studentClient = studentClient;
+    }
 
     @Override
     public LoanEntity save(CreateLoanDTO createLoanDTO) {
@@ -36,13 +39,13 @@ public class LoanServiceImpl implements LoanService{
 
     @Override
     public List<LoanDTO> getLoans() {
-        return LoanMapper.entityListToDtoList(loanRepository.findAll());
+        return LoanMapper.entityListToDtoList(loanRepository.findAll(), studentClient, bookClient);
     }
 
     @Override
     public LoanDTO getLoan(Long id) {
         LoanEntity loanEntity = loanRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Prestamo con id: " + id + " no encontrado"));
-        return LoanMapper.entityToDto(loanEntity);
+        return LoanMapper.entityToDto(loanEntity, getStudent(loanEntity.getStudentId()), getBook(loanEntity.getBookId()));
     }
 
     @Override
@@ -55,8 +58,10 @@ public class LoanServiceImpl implements LoanService{
     public LoanDTO updateLoan(Long id) {
         LoanEntity loanEntity = loanRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Prestamo con id: " + id + " no encontrado"));
         loanEntity.setReturnDate(LocalDate.now().plusDays(7));
-        return LoanMapper.entityToDto(loanRepository.save(loanEntity));
+        return LoanMapper.entityToDto(loanRepository.save(loanEntity), getStudent(loanEntity.getStudentId()), getBook(loanEntity.getBookId()));
     }
+
+
 
     @Override
     public LoanByStudentAndBookResponse getLoanByStudentAndBook(CreateLoanDTO createLoanDTO) {
@@ -77,5 +82,34 @@ public class LoanServiceImpl implements LoanService{
                 .studentName(studentDTO.name() + " " + studentDTO.lastname())
                 .returnDate(newLoan.getReturnDate())
                 .build();
+    }
+
+    @Override
+    public StudentDTO getStudent(Long idStudent) {
+        return studentClient.getStudentById(idStudent);
+    }
+
+    @Override
+    public BookDTO getBook(String idBook) {
+        return bookClient.findBookById(idBook);
+    }
+
+    @Override
+    public List<LoansReturningInfo> getReturningInfo() {
+
+        return loanRepository.findAll()
+                .stream()
+                .map(loan -> {
+                    StudentDTO student = getStudent(loan.getStudentId());
+                    return LoansReturningInfo
+                            .builder()
+                            .idLoan(loan.getId())
+                            .bookTitle(getBook(loan.getBookId()).title())
+                            .studentName(student.name() + " " + student.lastname())
+                            .daysAfterReturningDate(loan.daysPastDue())
+                            .penaltyAmount(loan.penaltyAmount())
+                            .returningDate(loan.getReturnDate())
+                            .build();
+                }).toList();
     }
 }

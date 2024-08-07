@@ -5,7 +5,6 @@ import com.library.students_microservice.entities.StudentEntity;
 import com.library.students_microservice.repository.StudentRepository;
 import com.library.students_microservice.utils.StudentMapper;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,8 +12,11 @@ import java.util.List;
 @Service
 public class StudentServiceImpl implements StudentService{
 
-    @Autowired
-    private StudentRepository studentRepository;
+    private final StudentRepository studentRepository;
+
+    public StudentServiceImpl(StudentRepository studentRepository) {
+        this.studentRepository = studentRepository;
+    }
 
     private StudentEntity getStudentById(Long id) {
         return studentRepository.findById(id)
@@ -46,7 +48,7 @@ public class StudentServiceImpl implements StudentService{
             studentRepository.delete(student);
         }
 
-        return "Estudiante con id: " + id + " eliminado.";
+        return "Estudiante eliminado con exito.";
     }
 
     @Override
