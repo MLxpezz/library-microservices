@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/loans")
@@ -46,7 +47,7 @@ public class LoanController {
 
     @DeleteMapping("/return-book/{id}")
     public ResponseEntity<?> returnBook(@PathVariable Long id) {
-        return ResponseEntity.ok(loanService.deleteLoan(id));
+        return ResponseEntity.ok(Map.of("Message: ", loanService.deleteLoan(id)));
     }
 
     @CircuitBreaker(name = "studentClient", fallbackMethod = "fallbackNewLoan")

@@ -63,7 +63,7 @@ public class LoanUpdateServicesAspect {
             StudentDTO student = studentClient.studentReturnook(loan.getStudentId());
             BookDTO book = bookClient.bookReturn(loan.getBookId());
 
-            logger.info("El estudiante {} ahora tiene {} prestamos y el libro {} tiene {} existencias.",
+            logger.info("Devolucion exista!, el estudiante {} ahora tiene {} prestamos y el libro {} tiene {} existencias.",
                     student.name(), student.countLoans(), book.title(), book.quantity());
 
 
