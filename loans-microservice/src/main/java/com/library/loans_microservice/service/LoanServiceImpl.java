@@ -9,10 +9,10 @@ import com.library.loans_microservice.http.response.LoansReturningInfo;
 import com.library.loans_microservice.repository.LoanRepository;
 import com.library.loans_microservice.utils.LoanMapper;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Transactional
@@ -25,10 +25,13 @@ public class LoanServiceImpl implements LoanService{
 
     private final StudentClientRequest studentClient;
 
-    public LoanServiceImpl(LoanRepository loanRepository, BookClientRequest bookClient, StudentClientRequest studentClient) {
+    private final KafkaTemplate<String, String> kafkaTemplate;
+
+    public LoanServiceImpl(LoanRepository loanRepository, BookClientRequest bookClient, StudentClientRequest studentClient, KafkaTemplate<String, String> kafkaTemplate) {
         this.loanRepository = loanRepository;
         this.bookClient = bookClient;
         this.studentClient = studentClient;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     @Override
@@ -57,7 +60,7 @@ public class LoanServiceImpl implements LoanService{
     @Override
     public LoanDTO updateLoan(Long id) {
         LoanEntity loanEntity = loanRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Prestamo con id: " + id + " no encontrado"));
-        loanEntity.setReturnDate(LocalDate.now().plusDays(7));
+        loanEntity.setReturnDate(loanEntity.getReturnDate().plusDays(7));
         return LoanMapper.entityToDto(loanRepository.save(loanEntity), getStudent(loanEntity.getStudentId()), getBook(loanEntity.getBookId()));
     }
 
@@ -74,6 +77,9 @@ public class LoanServiceImpl implements LoanService{
 
         //guardo el prestamo en la base de datos
         LoanEntity newLoan = this.save(createLoanDTO);
+
+        //notificamos al estudiante su prestamo efectuado
+        kafkaTemplate.send("loanNotification", studentDTO.email());
 
         //construimos y retornamos el objeto del prestamo
         return LoanByStudentAndBookResponse

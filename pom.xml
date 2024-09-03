@@ -25,6 +25,7 @@
 		<module>books-microservice</module>
 		<module>loans-microservice</module>
 		<module>auth-microservice</module>
+		<module>notification-microservice</module>
 	</modules>
 
 	<properties>

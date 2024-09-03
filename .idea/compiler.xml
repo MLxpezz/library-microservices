@@ -13,6 +13,7 @@
         <module name="students-microservice" />
         <module name="gateway-microservice" />
         <module name="auth-microservice" />
+        <module name="notification-microservice" />
         <module name="loans-microservice" />
       </profile>
     </annotationProcessing>
@@ -26,6 +27,7 @@
       <module name="gateway-microservice" options="-parameters" />
       <module name="library" options="" />
       <module name="loans-microservice" options="-parameters" />
+      <module name="notification-microservice" options="-parameters" />
       <module name="students-microservice" options="-parameters" />
     </option>
   </component>

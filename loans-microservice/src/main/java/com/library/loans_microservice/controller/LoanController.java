@@ -40,9 +40,9 @@ public class LoanController {
         return ResponseEntity.ok(loanService.getLoan(id));
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<LoanDTO> updateLoan(@PathVariable Long id) {
-        return ResponseEntity.ok(loanService.updateLoan(id));
+    @PutMapping("/update/{idLoan}")
+    public ResponseEntity<LoanDTO> updateLoan(@PathVariable Long idLoan) {
+        return ResponseEntity.ok(loanService.updateLoan(idLoan));
     }
 
     @DeleteMapping("/return-book/{id}")

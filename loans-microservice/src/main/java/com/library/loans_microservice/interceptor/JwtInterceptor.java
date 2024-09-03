@@ -11,7 +11,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.io.IOException;
-import java.util.Objects;
 
 @Component
 public class JwtInterceptor implements ClientHttpRequestInterceptor {
@@ -19,13 +18,15 @@ public class JwtInterceptor implements ClientHttpRequestInterceptor {
 
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
-        HttpServletRequest currentRequest = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
-        String token = currentRequest.getHeader(HttpHeaders.AUTHORIZATION);
-
+        String token = null;
+        if (RequestContextHolder.getRequestAttributes() != null) {
+            HttpServletRequest currentRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+            token = currentRequest.getHeader(HttpHeaders.AUTHORIZATION);
+        }
         if (token != null && token.startsWith("Bearer ")) {
             request.getHeaders().add(HttpHeaders.AUTHORIZATION, token);
         }
-
         return execution.execute(request, body);
     }
+
 }

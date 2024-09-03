@@ -30,6 +30,16 @@ public class JwtUtils {
                 .compact();
     }
 
+    public String createMicroserviceToken(String microserviceName) {
+        return Jwts
+                .builder()
+                .subject(microserviceName)
+                .expiration(new Date(System.currentTimeMillis() + 86400000))
+                .issuedAt(new Date())
+                .signWith(getSecretKey())
+                .compact();
+    }
+
     public boolean validateToken(String token) {
         try {
             Jwts.parser()

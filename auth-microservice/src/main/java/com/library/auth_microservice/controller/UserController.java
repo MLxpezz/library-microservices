@@ -49,6 +49,13 @@ public class UserController {
         }
     }
 
+    @PostMapping("/microservice-token")
+    public ResponseEntity<?> generateMicroserviceToken() {
+        String token = jwtUtils.createMicroserviceToken("msvc-loans");
+        return ResponseEntity.ok(token);
+    }
+
+
     @GetMapping("/validate-token")
     public ResponseEntity<Boolean> validateToken(@RequestHeader("Authorization") String authHeader) {
         if (!authHeader.startsWith("Bearer ")) {
