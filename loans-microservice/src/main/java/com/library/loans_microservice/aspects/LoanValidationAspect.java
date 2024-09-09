@@ -5,8 +5,10 @@ import com.library.loans_microservice.dto.CreateLoanDTO;
 import com.library.loans_microservice.dto.StudentDTO;
 import com.library.loans_microservice.exceptions.InsufficientBookStockException;
 import com.library.loans_microservice.exceptions.MaxLoansReachedException;
+import com.library.loans_microservice.exceptions.RepeatBookException;
 import com.library.loans_microservice.http.request.BookClientRequest;
 import com.library.loans_microservice.http.request.StudentClientRequest;
+import com.library.loans_microservice.repository.LoanRepository;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.slf4j.Logger;
@@ -23,9 +25,12 @@ public class LoanValidationAspect {
 
     private final BookClientRequest bookClient;
 
-    public LoanValidationAspect(StudentClientRequest studentClient, BookClientRequest bookClient) {
+    private final LoanRepository loanRepository;
+
+    public LoanValidationAspect(StudentClientRequest studentClient, BookClientRequest bookClient, LoanRepository loanRepository) {
         this.studentClient = studentClient;
         this.bookClient = bookClient;
+        this.loanRepository = loanRepository;
     }
 
     @Before("execution(* com.library.loans_microservice.service.LoanService.getLoanByStudentAndBook(..)) && args (createLoanDTO)")
@@ -42,6 +47,13 @@ public class LoanValidationAspect {
         if(book.quantity() <= 0) {
             throw new InsufficientBookStockException("El libro: " + book.title() + " no tiene existencias.");
         }
+
+        //verificar que el libro que pedira prestado no sea uno que ya tenga
+        loanRepository.findAll().forEach(loan -> {
+            if(loan.getBookId().equals(book.id())) {
+                throw new RepeatBookException("El alumno ya tiene el libro " + book.title());
+            }
+        });
 
         logger.info("El prestamo se realizo con exito al alumno {} y del libro {}", student.name(), book.title());
     }

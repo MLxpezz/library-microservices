@@ -4,11 +4,13 @@ import com.library.loans_microservice.dto.CreateLoanDTO;
 import com.library.loans_microservice.dto.LoanDTO;
 import com.library.loans_microservice.exceptions.InsufficientBookStockException;
 import com.library.loans_microservice.exceptions.MaxLoansReachedException;
+import com.library.loans_microservice.exceptions.RepeatBookException;
 import com.library.loans_microservice.http.response.LoanByStudentAndBookResponse;
 import com.library.loans_microservice.service.LoanService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,11 +53,11 @@ public class LoanController {
     }
 
     @CircuitBreaker(name = "studentClient", fallbackMethod = "fallbackNewLoan")
-    @PostMapping("/create")
+    @PostMapping(value = "/create")
     public ResponseEntity<?> newLoan(@RequestBody @Valid CreateLoanDTO createLoanDTO) {
         try {
             return ResponseEntity.ok(loanService.getLoanByStudentAndBook(createLoanDTO));
-        } catch (MaxLoansReachedException | InsufficientBookStockException exception) {
+        } catch (MaxLoansReachedException | InsufficientBookStockException | RepeatBookException exception) {
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
