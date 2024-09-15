@@ -50,7 +50,7 @@ public class LoanValidationAspect {
 
         //verificar que el libro que pedira prestado no sea uno que ya tenga
         loanRepository.findAll().forEach(loan -> {
-            if(loan.getBookId().equals(book.id())) {
+            if(loan.getBookId().equals(book.id()) && loan.getStudentId().equals(student.id())) {
                 throw new RepeatBookException("El alumno ya tiene el libro " + book.title());
             }
         });

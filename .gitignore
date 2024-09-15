@@ -3,3 +3,6 @@
 
 ##Ignorar archivo env
 .env
+
+##Ignorar archivo que crea intellij
+.idea

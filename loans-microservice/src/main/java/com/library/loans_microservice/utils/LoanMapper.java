@@ -5,6 +5,7 @@ import com.library.loans_microservice.dto.CreateLoanDTO;
 import com.library.loans_microservice.dto.LoanDTO;
 import com.library.loans_microservice.dto.StudentDTO;
 import com.library.loans_microservice.entity.LoanEntity;
+import com.library.loans_microservice.entity.LoanHistoryEntity;
 import com.library.loans_microservice.http.request.BookClientRequest;
 import com.library.loans_microservice.http.request.StudentClientRequest;
 
@@ -47,5 +48,16 @@ public class LoanMapper {
                             .build();
                 })
                 .toList();
+    }
+
+    public static LoanHistoryEntity loanEntityToLoanHistoryEntity(LoanEntity loanEntity) {
+        return LoanHistoryEntity
+                .builder()
+                .startedLoan(loanEntity.getLoanDate())
+                .endedLoan(LocalDate.now())
+                .bookId(loanEntity.getBookId())
+                .studentId(loanEntity.getStudentId())
+                .status("DEVUELTO")
+                .build();
     }
 }
