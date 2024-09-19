@@ -91,16 +91,6 @@ public class LoanServiceImpl implements LoanService{
     }
 
     @Override
-    public StudentDTO getStudent(Long idStudent) {
-        return studentClient.getStudentById(idStudent);
-    }
-
-    @Override
-    public BookDTO getBook(String idBook) {
-        return bookClient.findBookById(idBook);
-    }
-
-    @Override
     public List<LoansReturningInfo> getReturningInfo() {
 
         return loanRepository.findAll()
@@ -117,5 +107,13 @@ public class LoanServiceImpl implements LoanService{
                             .returningDate(loan.getReturnDate())
                             .build();
                 }).toList();
+    }
+
+    public StudentDTO getStudent(Long idStudent) {
+        return studentClient.getStudentById(idStudent);
+    }
+
+    public BookDTO getBook(String idBook) {
+        return bookClient.findBookById(idBook);
     }
 }

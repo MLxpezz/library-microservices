@@ -31,6 +31,9 @@ public class GatewayConfig {
                 .route("msvc-loans", route -> route.path("/api/loans/**")
                         .filters(filter -> filter.filter(authorizationFilter))
                         .uri("lb://msvc-loans"))
+                .route("msvc-loans", route -> route.path("/api/history/**")
+                        .filters(filter -> filter.filter(authorizationFilter))
+                        .uri("lb://msvc-loans"))
                 .build();
     }
 }

@@ -24,9 +24,5 @@ public interface LoanService {
 
     LoanByStudentAndBookResponse getLoanByStudentAndBook(CreateLoanDTO createLoanDTO);
 
-    StudentDTO getStudent(Long idStudent);
-
-    BookDTO getBook(String idBook);
-
     List<LoansReturningInfo> getReturningInfo();
 }
