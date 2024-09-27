@@ -1,7 +1,7 @@
 package com.library.loans_microservice.service;
 
 import com.library.loans_microservice.dto.BookDTO;
-import com.library.loans_microservice.dto.LoanDTO;
+import com.library.loans_microservice.dto.HistoryDTO;
 import com.library.loans_microservice.dto.StudentDTO;
 import com.library.loans_microservice.entity.LoanHistoryEntity;
 import com.library.loans_microservice.http.request.BookClientRequest;
@@ -32,17 +32,17 @@ public class LoanHistoryServiceImpl implements LoanHistoryService{
     }
 
     @Override
-    public List<LoanDTO> getAllLoanHistory() {
+    public List<HistoryDTO> getAllLoanHistory() {
         return this.loanHistoryRepository
                 .findAll()
                 .stream()
                 .map(loan -> {
-                    StudentDTO student = getStudent(loan.getStudentId());
-                    return LoanDTO
+                    return HistoryDTO
                             .builder()
                             .id(loan.getId())
-                            .returnDate(loan.getEndedLoan())
-                            .studentName(student.name() + " " + student.lastname())
+                            .finishLoanDate(loan.getEndedLoan())
+                            .startLoanDate(loan.getStartedLoan())
+                            .enrollmentNumber(getStudent(loan.getStudentId()).enrollmentNumber())
                             .bookTitle(getBook(loan.getBookId()).title())
                             .build();
                 }).toList();

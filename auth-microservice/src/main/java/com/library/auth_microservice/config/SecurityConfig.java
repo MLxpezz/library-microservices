@@ -1,5 +1,7 @@
 package com.library.auth_microservice.config;
 
+import com.library.auth_microservice.config.filters.JwtAuthenticationFilter;
+import com.library.auth_microservice.config.jwt.JwtUtils;
 import com.library.auth_microservice.service.UserDetailsServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,16 +24,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private AuthenticationConfiguration authenticationConfiguration;
+    private final AuthenticationConfiguration authenticationConfiguration;
+    private final JwtUtils jwtUtils;
 
     @Value("${api-key}")
     private String internalApiKey;
+
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JwtUtils jwtUtils) {
+        this.authenticationConfiguration = authenticationConfiguration;
+        this.jwtUtils = jwtUtils;
+    }
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -44,7 +52,8 @@ public class SecurityConfig {
                             String apiKey = object.getRequest().getHeader("api-x-key");
                             return new AuthorizationDecision(apiKey.equals(internalApiKey));
                         })
-                        .anyRequest().permitAll())
+                        .anyRequest().authenticated())
+                .addFilterBefore(new JwtAuthenticationFilter(jwtUtils), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

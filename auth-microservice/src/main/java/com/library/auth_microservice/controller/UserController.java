@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -47,6 +48,11 @@ public class UserController {
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
+    }
+
+    @GetMapping("/info")
+    public ResponseEntity<?> info(Authentication authentication) {
+        return ResponseEntity.ok(Map.of("email", authentication.getName()));
     }
 
     @PostMapping("/microservice-token")
