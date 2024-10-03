@@ -1,9 +1,11 @@
 package com.library.auth_microservice.service;
 
+import com.library.auth_microservice.dto.AuthResponseDTO;
 import com.library.auth_microservice.dto.LoginRequestDTO;
 import com.library.auth_microservice.dto.UpdateRequestDTO;
 import com.library.auth_microservice.dto.UserDTO;
 import com.library.auth_microservice.entity.UserEntity;
+import com.library.auth_microservice.exceptions.PasswordNotMatchesException;
 import com.library.auth_microservice.repository.UserRepository;
 import com.library.auth_microservice.utils.UserMapper;
 import jakarta.persistence.EntityNotFoundException;
@@ -16,11 +18,15 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService{
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthService authService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthService authService) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.authService = authService;
+    }
 
     @Override
     public UserDTO save(LoginRequestDTO loginRequestDTO) {
@@ -48,11 +54,30 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserDTO updateUser(Long id, UpdateRequestDTO updateRequestDTO) {
-        UserEntity user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User with id " + id + " not found"));
+    public AuthResponseDTO updateUser(Long id, UpdateRequestDTO updateRequestDTO) {
+        UserEntity user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User with id " + id + " not found"));
+
+        if(!passwordEncoder.matches(updateRequestDTO.password(), user.getPassword())){
+            throw new PasswordNotMatchesException("La contraseña actual no es correcta.");
+        }
+
+        if(!updateRequestDTO.newPassword().isEmpty()) {
+            if(updateRequestDTO.newPassword().length() < 8) {
+                throw new IllegalArgumentException("La nueva contraseña debe tener minimo 8 caracteres.");
+            }
+            user.setPassword(passwordEncoder.encode(updateRequestDTO.newPassword()));
+        }
+
         user.setEmail(updateRequestDTO.email());
-        user.setPassword(updateRequestDTO.password());
-        return UserMapper.entityToDTO(userRepository.save(user));
+
+        UserEntity newUser = userRepository.save(user);
+
+        String newOrOldPassword = updateRequestDTO.newPassword().isEmpty() ? updateRequestDTO.password() : updateRequestDTO.newPassword();
+
+        AuthResponseDTO authResponseDTO = authService.login(newUser.getEmail(), newOrOldPassword);
+
+        return authResponseDTO;
     }
 
     @Override

@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 
 @Component
 public class ScheduleReminder {
@@ -39,8 +38,14 @@ public class ScheduleReminder {
         List<LoanEntity> loanExpired = loanRepository.findAll()
                 .stream()
                 .filter(loan -> {
-                    return !Objects.equals(loan.getReturnDate(), LocalDate.now());
+                    LocalDate returnDate = loan.getReturnDate();
+                    LocalDate now = LocalDate.now();
+                    LocalDate nowPlusTwoDays = LocalDate.now().plusDays(2);
+
+                    // Retorna true si la fecha de devolución está entre hoy y dentro de dos días
+                    return (returnDate.isAfter(now) || returnDate.isEqual(now)) && returnDate.isBefore(nowPlusTwoDays);
                 }).toList();
+
 
         //obtener los emails de los alumnos con fechas de prestamo casi vencidas
         List<String> studentEmails = loanRepository.findAll()

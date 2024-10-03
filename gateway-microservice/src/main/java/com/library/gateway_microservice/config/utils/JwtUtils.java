@@ -18,7 +18,8 @@ public class JwtUtils {
                     .verifyWith(getSecretKey())
                     .build()
                     .parseSignedClaims(token)
-                    .getPayload();
+                    .getPayload()
+                    .getSubject();
 
             return true;
 

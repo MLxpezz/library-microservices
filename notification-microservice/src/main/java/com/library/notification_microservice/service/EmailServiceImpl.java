@@ -38,7 +38,7 @@ public class EmailServiceImpl implements EmailService {
             helper.setFrom(emailFrom);
             helper.setTo(email);
             helper.setSubject("Prestamo de libro");
-            helper.setText("Estimado alumno, su prestamo fue efectuado con exito y se le recuerda devolver el libro en tiempo y forma");
+            helper.setText("Estimado alumno, su prestamo fue efectuado con exito y recuerde devolverlo a tiempo o tendra una penalizacion cada dia pasada la fecha estimada.");
             mailSender.send(mimeMailMessage);
 
             log.info("Mensaje enviado a correo {}", email);
@@ -58,7 +58,7 @@ public class EmailServiceImpl implements EmailService {
                 helper.setFrom(emailFrom);
                 helper.setTo(email);
                 helper.setSubject("Prestamo de libro");
-                helper.setText("Se le recuerda la devolucion del libro x");
+                helper.setText("Se le recuerda la devolucion del libro ala biblioteca, pasada la fecha estimada se le añadira una penalizacion cada dia de 1.00$");
                 mailSender.send(mimeMailMessage);
 
                 log.info("Mensaje enviado a correo {}", email);

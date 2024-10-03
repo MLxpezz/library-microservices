@@ -5,6 +5,8 @@ import com.library.auth_microservice.dto.AuthResponseDTO;
 import com.library.auth_microservice.dto.LoginRequestDTO;
 import com.library.auth_microservice.dto.UpdateRequestDTO;
 import com.library.auth_microservice.dto.UserDTO;
+import com.library.auth_microservice.entity.UserEntity;
+import com.library.auth_microservice.service.AuthService;
 import com.library.auth_microservice.service.UserService;
 import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.JwtException;
@@ -27,14 +29,15 @@ import java.util.Map;
 @RequestMapping("/api/users")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final JwtUtils jwtUtils;
+    private final AuthService authService;
 
-    @Autowired
-    private JwtUtils jwtUtils;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    public UserController(UserService userService, JwtUtils jwtUtils, AuthService authService) {
+        this.userService = userService;
+        this.jwtUtils = jwtUtils;
+        this.authService = authService;
+    }
 
     @GetMapping("/get-all")
     public ResponseEntity<?> getUsers() {
@@ -52,7 +55,12 @@ public class UserController {
 
     @GetMapping("/info")
     public ResponseEntity<?> info(Authentication authentication) {
-        return ResponseEntity.ok(Map.of("email", authentication.getName()));
+        try {
+            UserDTO user = userService.getUserByEmail(authentication.getName());
+            return ResponseEntity.ok(Map.of("email", user.email(), "id", user.id()));
+        } catch (EntityNotFoundException exception) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El usuario no fue encontrado.");
+        }
     }
 
     @PostMapping("/microservice-token")
@@ -92,20 +100,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid LoginRequestDTO loginRequestDTO) {
         try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequestDTO.email(), loginRequestDTO.password())
-            );
-            String token = jwtUtils.createToken(authentication);
-
-            AuthResponseDTO authResponse = AuthResponseDTO
-                    .builder()
-                    .message("Autenticacion exitosa!")
-                    .token(token)
-                    .isSuccess(true)
-                    .build();
-
-            return ResponseEntity.ok(authResponse);
-
+            return ResponseEntity.ok(authService.login(loginRequestDTO.email(), loginRequestDTO.password()));
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error de autenticación: " + e.getMessage());
         }

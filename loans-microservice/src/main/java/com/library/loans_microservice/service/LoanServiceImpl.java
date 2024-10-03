@@ -78,7 +78,7 @@ public class LoanServiceImpl implements LoanService{
         //guardo el prestamo en la base de datos
         LoanEntity newLoan = this.save(createLoanDTO);
 
-        //notificamos al estudiante su prestamo efectuado
+        //enviamos evento con kafka al microservicio de notificaciones para avisar al usuario por correo de su prestamo
         kafkaTemplate.send("loanNotification", studentDTO.email());
 
         //construimos y retornamos el objeto del prestamo

@@ -25,14 +25,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String tokenRequest = request.getHeader("Authorization"); // Método para obtener el JWT de la cabecera
+        String tokenRequest = request.getHeader("Authorization");
+
         if (tokenRequest != null && tokenRequest.startsWith("Bearer ")) {
             String token = tokenRequest.substring(7);
             if(jwtUtils.validateToken(token)) {
                 String email = jwtUtils.getUsernameFromToken(token);
                 List<GrantedAuthority> authorities = new ArrayList<>();
-                Authentication auth = new UsernamePasswordAuthenticationToken(email, null, authorities); // Método para obtener la autenticación del token
-                SecurityContextHolder.getContext().setAuthentication(auth); // Se guarda la autenticación en el contexto de seguridad
+                Authentication auth = new UsernamePasswordAuthenticationToken(email, null, authorities);
+                SecurityContextHolder.getContext().setAuthentication(auth);
             }
         }
 

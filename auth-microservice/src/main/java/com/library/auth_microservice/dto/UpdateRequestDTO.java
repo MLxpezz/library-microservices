@@ -10,5 +10,7 @@ public record UpdateRequestDTO(@NotBlank(message = "El campo correo es requerido
                                String email,
                                @NotBlank(message = "El campo contraseña es requerido.")
                                @Size(min = 8, message = "El campo contraseña debe tener un minimo de 8 caracteres.")
-                               String password) {
+                               String password,
+                               String newPassword
+) {
 }

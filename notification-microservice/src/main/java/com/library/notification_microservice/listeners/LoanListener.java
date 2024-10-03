@@ -31,8 +31,6 @@ public class LoanListener {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             List<String> emails = objectMapper.readValue(emailsJson, new TypeReference<List<String>>() {});
-
-            System.out.println("emails : " + emails);
             emailservice.reminderLoan(emails);
         } catch (Exception e) {
             // Maneja la excepción de deserialización
