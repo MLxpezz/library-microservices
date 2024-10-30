@@ -73,9 +73,7 @@ public class UserServiceImpl implements UserService{
 
         UserEntity newUser = userRepository.save(user);
 
-        String newOrOldPassword = updateRequestDTO.newPassword().isEmpty() ? updateRequestDTO.password() : updateRequestDTO.newPassword();
-
-        AuthResponseDTO authResponseDTO = authService.login(newUser.getEmail(), newOrOldPassword);
+        AuthResponseDTO authResponseDTO = authService.login(newUser.getEmail(), newUser.getPassword());
 
         return authResponseDTO;
     }
