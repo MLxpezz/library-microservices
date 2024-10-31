@@ -1,10 +1,10 @@
 package com.library.auth_microservice.service;
 
 import com.library.auth_microservice.TestDataProvider;
-import com.library.auth_microservice.dto.LoginRequestDTO;
 import com.library.auth_microservice.dto.UserDTO;
 import com.library.auth_microservice.entity.UserEntity;
 import com.library.auth_microservice.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -68,11 +68,21 @@ public class UserServiceImplTest {
         assertNotNull(expectedUser);
         //verificamos que el metodo sea llamado almenos una vez
         verify(userRepository, times(1)).findById(id);
-        System.out.println("Test findById successful");
+        System.out.println("Test getUser successful");
     }
 
     @Test
     @Order(3)
+    public void getUserNotFoundTest() {
+        Long id = 1L;
+
+        assertThrows(EntityNotFoundException.class, () -> userService.getUser(id));
+        System.out.println("Test getUserNotFound successful");
+    }
+
+
+    @Test
+    @Order(4)
     public void getAllUsersTest() {
 
         //Simulamos el comportamiento del repository con la base de datos
@@ -92,4 +102,51 @@ public class UserServiceImplTest {
         System.out.println("Test findAll successful");
     }
 
+    @Test
+    @Order(5)
+    public void deleteUserTest() {
+        Long id = 1L;
+        UserEntity user = TestDataProvider.userEntityProvider();
+
+        when(userRepository.findById(id)).thenReturn(Optional.of(user));
+
+        String message = userService.deleteUser(id);
+
+        assertThat(message).isEqualTo("User with id: " + id +" deleted");
+        verify(userRepository, times(1)).deleteById(anyLong());
+        System.out.println("Test delete successful");
+    }
+
+    @Test
+    @Order(6)
+    public void deleteUserNotFoundTest() {
+        Long id = 1L;
+
+        assertThrows(EntityNotFoundException.class, () -> userService.deleteUser(id));
+
+        System.out.println("Test deleteUserNotFound successful");
+    }
+
+    @Test
+    @Order(7)
+    public void getUserByEmailTest() {
+        String email = "mauricio@gmail.com";
+
+        when(userRepository.findUserEntityByEmail(email)).thenReturn(Optional.ofNullable(TestDataProvider.userEntityProvider()));
+
+        UserDTO expectedUser = userService.getUserByEmail(email);
+
+        assertNotNull(expectedUser);
+        assertThat(expectedUser.email()).isEqualTo(email);
+        verify(userRepository, times(1)).findUserEntityByEmail(email);
+        System.out.println("Test getUserByEmail successful");
+    }
+
+    @Test
+    @Order(8)
+    public void getUserByEmailNotFoundTest() {
+        String email = "mauricio@gmail.com";
+        assertThrows(EntityNotFoundException.class, () -> userService.getUserByEmail(email));
+        System.out.println("Test getUserByEmailNotFound successful");
+    }
 }
