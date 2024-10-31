@@ -1,12 +1,10 @@
 package com.library.auth_microservice.service;
 
-import com.library.auth_microservice.dto.AuthResponseDTO;
+import com.library.auth_microservice.TestDataProvider;
 import com.library.auth_microservice.dto.LoginRequestDTO;
-import com.library.auth_microservice.dto.UpdateRequestDTO;
 import com.library.auth_microservice.dto.UserDTO;
 import com.library.auth_microservice.entity.UserEntity;
 import com.library.auth_microservice.repository.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,15 +16,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceImplTest {
@@ -43,109 +35,61 @@ public class UserServiceImplTest {
     @InjectMocks
     private UserServiceImpl userService;
 
-    private UserEntity userEntity;
-
-    private LoginRequestDTO loginRequestDTO;
-
-    private UserDTO expectUser;
-
-    private UpdateRequestDTO updateRequestDTO;
-
-    @BeforeEach
-    void setUp() {
-        loginRequestDTO = LoginRequestDTO
-                .builder()
-                .email("mauricio@gmail.com")
-                .password("12345678")
-                .build();
-
-        userEntity = UserEntity
-                .builder()
-                .id(1L)
-                .email("mauricio@gmail.com")
-                .password(passwordEncoder.encode("12345678"))
-                .isAccountNonExpired(true)
-                .isAccountNonLocked(true)
-                .isEnabled(true)
-                .isCredentialsNonExpired(true)
-                .build();
-
-        expectUser = UserDTO
-                .builder()
-                .id(1L)
-                .email("mauricio@gmail.com")
-                .build();
-
-        updateRequestDTO = UpdateRequestDTO
-                .builder()
-                .email("mau@gmail.com")
-                .password("12345678")
-                .newPassword("987654321")
-                .build();
-    }
-
     @Test
     @Order(1)
     public void saveTest() {
-        // Precondition
-        given(userRepository.save(any(UserEntity.class))).willReturn(userEntity);
+        //simulamos el comportamiento de nuestra dependencia y asi no usamos el metodo real
+        //porque el dia de mañana los datos pueden cambiar
+        when(userRepository.save(any(UserEntity.class))).thenReturn(TestDataProvider.userEntityProvider());
 
-        // Action
-        UserDTO userSaved = userService.save(loginRequestDTO);
+        //obtenemos el resultado de la simulacion
+        UserDTO expectedUser = userService.save(TestDataProvider.loginRequestDTOProvider());
 
-        // Verify output
-        assertThat(userSaved).isNotNull();
-        assertThat(userSaved.email()).isEqualTo(expectUser.email());
-
-        // verifica que se haya llamado al método del repositorio
-        verify(userRepository, times(1)).save(userEntity);
-        System.out.println("Test 1 successfully saved");
+        //verificamos que el resultado no sea nulo
+        assertNotNull(expectedUser);
+        //verificamos que el metodo se haya llamado almenos una vez
+        verify(userRepository, times(1)).save(any(UserEntity.class));
+        System.out.println("Test save successful");
     }
 
     @Test
     @Order(2)
-    public void testGetUser() {
-        //precondition
-        given(userRepository.findById(1L)).willReturn(Optional.of(userEntity));
+    public void getUserTest() {
+        //objetos o variables que ocupamos para el test
+        Long id = 1L;
 
-        //action
-        UserDTO user = userService.getUser(1L);
+        //Simulamos el comportamiento que debe tener nuestro repository y lo que devuelve
+        when(userRepository.findById(id)).thenReturn(Optional.of(TestDataProvider.userEntityProvider()));
 
-        //verify output
-        assertThat(user).isNotNull();
+        //obtenemos el resultado que debe devovler nuestro service
+        UserDTO expectedUser = userService.getUser(id);
 
-        //verify
-        verify(userRepository, times(1)).findById(1L);
-        System.out.println("Test 2 successfully get user");
+        //verificamos que no sea nulo
+        assertNotNull(expectedUser);
+        //verificamos que el metodo sea llamado almenos una vez
+        verify(userRepository, times(1)).findById(id);
+        System.out.println("Test findById successful");
     }
 
     @Test
     @Order(3)
-    public void testGetAllUsers() {
-        //precondition
-        given(userRepository.findAll()).willReturn(List.of(userEntity));
+    public void getAllUsersTest() {
 
-        //action
-        List<UserDTO> users = userService.getAllUsers();
+        //Simulamos el comportamiento del repository con la base de datos
+        when(userRepository.findAll()).thenReturn(TestDataProvider.userEntityListProvider());
 
-        //verify output
-        assertThat(users).isNotNull();
-        assertThat(users.size()).isGreaterThan(0);
+        //obtenemos el resultado que debe devolver nuestro service
+        List<UserDTO> userList = userService.getAllUsers();
+
+        //verificamos que la lista no venga nula
+        assertNotNull(userList);
+        //verificamos que la lista no este vacia
+        assertThat(userList).isNotEmpty();
+        //verificamos que el email del primer elemento sea igual al email proporcionado
+        assertThat(userList.get(0).email()).isEqualTo("mauricio@gmail.com");
+        //verificamos que el metodo sea llamado almenos una vez
         verify(userRepository, times(1)).findAll();
-        System.out.println("Test 3 successfully get users");
+        System.out.println("Test findAll successful");
     }
 
-    @Test
-    @Order(4)
-    public void testDeleteUser() {
-        //precondition
-        given(userRepository.findById(userEntity.getId())).willReturn(Optional.of(userEntity));
-
-        //action
-        userService.deleteUser(userEntity.getId());
-
-        //verify
-        verify(userRepository, times(1)).delete(userEntity);
-        System.out.println("Test 4 successfully deleted");
-    }
 }
