@@ -1,8 +1,11 @@
 package com.library.auth_microservice.service;
 
 import com.library.auth_microservice.TestDataProvider;
+import com.library.auth_microservice.dto.AuthResponseDTO;
+import com.library.auth_microservice.dto.UpdateRequestDTO;
 import com.library.auth_microservice.dto.UserDTO;
 import com.library.auth_microservice.entity.UserEntity;
+import com.library.auth_microservice.exceptions.PasswordNotMatchesException;
 import com.library.auth_microservice.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Order;
@@ -41,6 +44,7 @@ public class UserServiceImplTest {
         //simulamos el comportamiento de nuestra dependencia y asi no usamos el metodo real
         //porque el dia de mañana los datos pueden cambiar
         when(userRepository.save(any(UserEntity.class))).thenReturn(TestDataProvider.userEntityProvider());
+        when(passwordEncoder.encode("12345678")).thenReturn("encodedPassword");
 
         //obtenemos el resultado de la simulacion
         UserDTO expectedUser = userService.save(TestDataProvider.loginRequestDTOProvider());
@@ -148,5 +152,60 @@ public class UserServiceImplTest {
         String email = "mauricio@gmail.com";
         assertThrows(EntityNotFoundException.class, () -> userService.getUserByEmail(email));
         System.out.println("Test getUserByEmailNotFound successful");
+    }
+
+    @Test
+    @Order(9)
+    public void updateUserTest() {
+        Long id = 1L;
+        UpdateRequestDTO updateUser = TestDataProvider.updateRequestDTOProdiver();
+        UserEntity newUser = TestDataProvider.userEntityProvider();
+
+        when(userRepository.findById(id)).thenReturn(Optional.of(TestDataProvider.userEntityProvider()));
+        when(passwordEncoder.matches(updateUser.password(), newUser.getPassword())).thenReturn(true);
+        when(userRepository.save(any(UserEntity.class))).thenReturn(newUser);
+        when(authService.login(newUser.getEmail(), newUser.getPassword())).thenReturn(TestDataProvider.authResponseDTOProvider());
+
+        AuthResponseDTO response = userService.updateUser(id, updateUser);
+
+        assertNotNull(response);
+        assertThat(response.isSuccess()).isTrue();
+        assertThat(response.token()).isNotEmpty();
+        verify(authService, times(1)).login(newUser.getEmail(), newUser.getPassword());
+        System.out.println("Test update successful");
+    }
+
+    @Test
+    @Order(10)
+    public void updateUserPasswordNotMatchesTest() {
+        Long id = 1L;
+        UpdateRequestDTO updatedUser = TestDataProvider.updateRequestDTOProdiver();
+        UserEntity userStored = TestDataProvider.userEntityProvider();
+
+        when(userRepository.findById(id)).thenReturn(Optional.ofNullable(userStored));
+        assert userStored != null;
+        when(passwordEncoder.matches(updatedUser.password(), userStored.getPassword())).thenReturn(false);
+
+        assertThrows(PasswordNotMatchesException.class, () -> {
+            userService.updateUser(id, updatedUser);
+        });
+        System.out.println("Test PasswordNotMatches successful");
+    }
+
+    @Test
+    @Order(11)
+    public void updateUserNewPasswordInvalidTest() {
+        Long id = 1L;
+        UpdateRequestDTO updatedUser = TestDataProvider.updateRequestDTOPasswordInvalidProdiver();
+        UserEntity storedUser = TestDataProvider.userEntityProvider();
+
+        when(userRepository.findById(id)).thenReturn(Optional.ofNullable(TestDataProvider.userEntityProvider()));
+        when(passwordEncoder.matches(updatedUser.password(), storedUser.getPassword())).thenReturn(true);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.updateUser(id, updatedUser);
+        });
+
+        System.out.println("Test updateUserNewPassword Successful");
     }
 }
