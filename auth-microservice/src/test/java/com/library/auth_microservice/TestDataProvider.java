@@ -5,6 +5,8 @@ import com.library.auth_microservice.dto.LoginRequestDTO;
 import com.library.auth_microservice.dto.UpdateRequestDTO;
 import com.library.auth_microservice.dto.UserDTO;
 import com.library.auth_microservice.entity.UserEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
@@ -84,5 +86,9 @@ public class TestDataProvider {
                 .isSuccess(true)
                 .message("Authentication success")
                 .build();
+    }
+
+    public static Authentication authenticationProvider() {
+        return new UsernamePasswordAuthenticationToken("mauricio@gmail.com", "12345678");
     }
 }
